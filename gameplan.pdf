@@ -1,0 +1,7 @@
+Gameplan fyrir smíðina á þessu forriti:
+1. Klasa fyrir leikmenn/leikmann, allt að 5 manns geta spilað(hægt að breyta seinna meir, reynum að nota ekki magic constant)
+2. Klasa fyrir skortkort(það þarf að geta reiknað og geta útilokað valmöguleika, mögulega í formi boolean)
+3. Föll til að ákvarða teningakast, 6 teningar, búum til instance af hverjum teningi eða jafnvel fall sem heldur bara utan um það
+4. Föll sem tjekka á útkomum teningakastsins, hvað er í boði hverju sinni
+5.(Kúl side-fall að hafa fall sem reiknar út líkurnar á hvaða útkomu hverju sinni)
+6. Geta reiknað heildarsummu allra leikmanna

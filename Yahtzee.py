@@ -91,45 +91,45 @@ class Player:
     
     def setScore(self, score, options, dice):
         if score == 1 and options[0] == True:
-              aceSum = 0
-                for i in dice:
-                    if i == 1:
-                        aceSum += 1
+            aceSum = 0
+            for i in dice:
+                if i == 1:
+                    aceSum += 1
             self.upperSection[0] = aceSum
             self.upperSectionBool[0] = True
         if score == 2 and options[1] == True:
-              twoSum = 0
-                for i in dice:
-                    if i == 2:
-                        twoSum += 2
+            twoSum = 0
+            for i in dice:
+                if i == 2:
+                    twoSum += 2
             self.upperSection[1] = twoSum
             self.upperSectionBool[1] = True
         if score == 3 and options[2] == True:
             threeSum = 0
-                for i in dice:
-                    if i == 3:
-                        threeSum += 3
+            for i in dice:
+                if i == 3:
+                    threeSum += 3
             self.upperSection[2] = threeSum
             self.upperSectionBool[2] = True            
         if score == 4 and options[3] == True:
             fourSum = 0
-                for i in dice:
-                    if i == 4:
-                        fourSum += 4
+            for i in dice:
+                if i == 4:
+                    fourSum += 4
             self.upperSection[3] = fourSum
             self.upperSectionBool[3] = True
         if score == 5 and options[4] == True:
             fiveSum = 0
-                for i in dice:
-                    if i == 5:
-                        fiveSum += 5
+            for i in dice:
+                if i == 5:
+                    fiveSum += 5
             self.upperSection[4] = fiveSum
             self.upperSectionBool[4] = True
         if score == 6 and options[5] == True:
             sixSum = 0
-                for i in dice:
-                    if i == 6:
-                        sixSum += 6
+            for i in dice:
+                if i == 6:
+                    sixSum += 6
             self.upperSection[5] = sixSum
             self.upperSectionBool[5] = True
         if score == 7 and options[6] == True:
@@ -188,15 +188,14 @@ def chance(dice):
     return sum(dice)
 
 
-i = 0
-while i < 1:
-    player1 = Player()
+player1 = Player()
+while True:
     dices = dice_roll(5)
     print('These are your dices for this throw: ')
     print(dices)
     options = player1.dice_checker(dices)
     player1.option_display(options)
-    answer = input('You have 2 more throws, would you like to use them?(Y/y for yes)')
+    answer = input('You have 2 more throws, would you like to use them?(Y for yes)')
     if answer == 'Y' or answer == 'y':
         number_of_dices = input('How many dices would you like to keep? ')
         n_o_d = []
@@ -206,10 +205,10 @@ while i < 1:
         dices = n_o_d + dice_roll(5 - int(number_of_dices))
         print('These are your current dices: ')
         print(dices)
-        options2 = player1.dice_checker(dices)
-        player1.option_display(options2)
+        options = player1.dice_checker(dices)
+        player1.option_display(options)
         answer2 = input('You have 1 more throw, would you like to use it?(Y/y for yes)')
-        if answer == 'Y' or answer == 'y':
+        if answer2 == 'Y' or answer == 'y':
             number_of_dices2 = input('How many dices would you like to keep? ')
             n_o_d = []
             for j in range((int(number_of_dices2))):
@@ -221,6 +220,11 @@ while i < 1:
             options = player1.dice_checker(dices)
             player1.option_display(options)
     choice = input('Choose option to score: ')
+    player1.setScore(int(choice), options, dices)
+    print(player1.upperSection)
+    print(player1.lowerSection)
+    if all(player1.upperSectionBool) and all(player1.lowerSectionBool):
+        break
 
     
     

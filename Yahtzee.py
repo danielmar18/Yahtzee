@@ -1,15 +1,7 @@
 #Yahtzee leikur
 import random
 import statistics
-'''class ScoreCard:
-    def __init__(self):
-        self.upperSection = [0] * 6
-        self.upperSectionBool = [False] * 6
-        self.upperSectionSum = 0
-        self.lowerSection = [0] * 7
-        self.lowerSectionBool = [False] * 7
-        self.lowerSectionSum = 0
-        self.bonusCounter = 0'''
+
 class Player:
     def __init__(self):
         self.upperSection = [0] * 6
@@ -50,7 +42,9 @@ class Player:
             if self.lowerSectionBool[1] == False and counter == 4:
                 possible_options[7]== True
         if self.lowerSectionBool[0] == False and (len(set(dice)) == 3):
-            possible_options[6] = True
+            counter = dice.count(max(dice, key = dice.count))
+            if counter == 3:
+                possible_options[6] = True
         lowerStraight = [1,2,3,4,5]
         higherStraight = [2,3,4,5,6]
         if self.lowerSectionBool[3] != True and sorted(dice) == lowerStraight:
@@ -160,80 +154,58 @@ class Player:
             self.lowerSection[6] = sum(dice)
             self.lowerSectionBool[6] = True
 
+class Game:
+    def __init__(self):
+        self.player = Player()
+
+    def dice_generator(self, n):
+        self.dice = []
+        for i in range(n):
+            self.dice.append(random.randint(1,6))
+        return self.dice
+    
+    def game_generator(self):
+        self.dices = self.dice_generator(5)
+        print('These are your dices for this throw: ')
+        print(self.dice)
+        self.player.option_display(self.player.dice_checker(self.dice))
+        self.answer = input('You have 2 more throws, would you like to use them?(Y for yes)')
+        if self.answer == 'Y':
+            self.diceNum = input('How many dices would you like to keep? ')
+            self.dicesToKeep = self.throw_again(int(self.diceNum), self.dice)
+            self.dice = self.dicesToKeep + self.dice_generator(5-int(self.diceNum))
+            print('These are your dices now: ')
+            print(self.dice)
+            self.player.option_display(self.player.dice_checker(self.dice))
+            self.answer2 = input('You have 1 more throw, would you like to use it?(Y for yes)')
+            if self.answer2 == 'Y':
+                self.diceNum = input('How many dices would you like to keep? ')
+                self.dicesToKeep = self.throw_again(int(self.diceNum), self.dice)
+                self.dice = self.dicesToKeep + self.dice_generator(5-int(self.diceNum))
+                print('These are your dices now: ')
+                print(self.dice)
+                self.player.option_display(self.player.dice_checker(self.dice))
+        self.choice = input('Choose option to score: ')
+        self.player.setScore(int(self.choice), self.player.dice_checker(self.dice), self.dice)
+        print(self.player.upperSection)
+        print(self.player.lowerSection)
+   
+    def throw_again(self, number, diceList):
+        self.keepDice = []
+        for i in range(number):
+            self.d_t_k = input('Select dice to keep(1 for the first, 2 for the second and etc. ')
+            self.keepDice.append(diceList[int(self.d_t_k) - 1])
+        return self.keepDice
+    
+game = Game()
+while True:
+    game.game_generator()
+    if all(game.player.lowerSectionBool) and all(game.player.upperSectionBool):
+        break 
 
 
 #all() til að tjekka að allt sé True
 #any() til að tjekka að eitthvað sé True
-
-
-def dice_roll(n):
-    dice = []
-    for i in range(n):
-        dice.append(random.randint(1,6))
-    return dice
-
-
-
-
-
-def largeStraight(dice):
-    sDice = sorted(dice, reverse=True)
-    sDice.remove(sDice[len(dice)-1])
-    return sum(sDice)
-
-def yahtzee_move(dice):
-    return 50
-
-def chance(dice):
-    return sum(dice)
-
-
-player1 = Player()
-while True:
-    dices = dice_roll(5)
-    print('These are your dices for this throw: ')
-    print(dices)
-    options = player1.dice_checker(dices)
-    player1.option_display(options)
-    answer = input('You have 2 more throws, would you like to use them?(Y for yes)')
-    if answer == 'Y' or answer == 'y':
-        number_of_dices = input('How many dices would you like to keep? ')
-        n_o_d = []
-        for i in range((int(number_of_dices))):
-            d_t_k = input('Select dice to keep')
-            n_o_d.append(dices[int(d_t_k) - 1])
-        dices = n_o_d + dice_roll(5 - int(number_of_dices))
-        print('These are your current dices: ')
-        print(dices)
-        options = player1.dice_checker(dices)
-        player1.option_display(options)
-        answer2 = input('You have 1 more throw, would you like to use it?(Y/y for yes)')
-        if answer2 == 'Y' or answer == 'y':
-            number_of_dices2 = input('How many dices would you like to keep? ')
-            n_o_d = []
-            for j in range((int(number_of_dices2))):
-                d_t_k = input('Select dice to keep')
-                n_o_d.append(dices[int(d_t_k) - 1])
-            dices = n_o_d + dice_roll(5 - int(number_of_dices2))
-            print('These are your current dices: ')
-            print(dices)
-            options = player1.dice_checker(dices)
-            player1.option_display(options)
-    choice = input('Choose option to score: ')
-    player1.setScore(int(choice), options, dices)
-    print(player1.upperSection)
-    print(player1.lowerSection)
-    if all(player1.upperSectionBool) and all(player1.lowerSectionBool):
-        break
-
-    
-    
-
-
-
-'''    if all(player1.lowerSectionBool) and all(player1.upperSectionBool):
-        break'''
-
 
 
 

@@ -1,11 +1,11 @@
-#Yahtzee leikur
+#Yahtzee GUI
 import random
 import statistics
 from tkinter import *
 from functools import partial
 
 window = Tk()
-window.title('Yahtzee by Reyrey and Danni')
+window.title('Yahtzee by Reynir and Daniel')
 window.geometry("600x400")
 titleFrame = Frame(window)
 titleFrame.pack()
@@ -16,18 +16,21 @@ optionsFrame.pack(side=TOP)
 answerFrame = Frame(window)
 answerFrame.pack(side=TOP)
 quitFrame = Frame(window)
-quitFrame.pack(side=TOP)
-# Label(optionsFrame, text="OPTIONS FRAME!").pack()
-# Label(answerFrame, text="ANSWER FRAME!").pack()
+quitFrame.pack(side=BOTTOM)
+
 
 DICEHEIGHT = 5
 DICEWIDTH = 10
+numberToAdd = 0
+upper = [0] * 6
+lower = [0] * 7
+seeScoreBoolean = False
 
 class Player:
     def __init__(self):
-        self.upperSection = [0] * 6
+        self.upperSection = upper
         self.upperSectionBool = [False] * 6
-        self.lowerSection = [0] * 7
+        self.lowerSection = lower
         self.lowerSectionBool = [False] * 7
         self.bonusCounter = 0
 
@@ -75,59 +78,50 @@ class Player:
         if self.lowerSectionBool[6] != True:
             possible_options[12] = True
         return possible_options
-
+    
     def option_display(self, possible_options):
+        def addToScore(value):
+            global numberToAdd
+            numberToAdd = value
+            Player().setScore(value, Player().dice_checker(Game().dice), Game().dice)
         if possible_options[0] == True:
-            print('1. Aces available')
-            acesLabel = Button(optionsFrame, text='1. Aces available')
+            acesLabel = Button(optionsFrame, text='Aces available', command=partial(addToScore, 1))
             acesLabel.pack(side=TOP)
         if possible_options[1] == True:
-            print("2. Two's available")
-            twosLabel = Button(optionsFrame, text="2. Two's available")
+            twosLabel = Button(optionsFrame, text="Two's available", command=partial(addToScore, 2))
             twosLabel.pack(side=TOP)
         if possible_options[2] == True:
-            print("3. Threes available")
-            threesLabel = Button(optionsFrame, text="3. Threes available")
+            threesLabel = Button(optionsFrame, text="Threes available", command=partial(addToScore, 3))
             threesLabel.pack(side=TOP)
         if possible_options[3] == True:
-            print("4. Fours available")
-            foursLabel = Button(optionsFrame, text="4. Fours available")
+            foursLabel = Button(optionsFrame, text="Fours available", command=partial(addToScore, 4))
             foursLabel.pack(side=TOP)
         if possible_options[4] == True:
-            print("5. Fives available")
-            fivesLabel = Button(optionsFrame, text="5. Fives available")
+            fivesLabel = Button(optionsFrame, text="Fives available", command=partial(addToScore, 5))
             fivesLabel.pack(side=TOP)
         if possible_options[5] == True:
-            print("6. Sixes available")
-            sixesLabel = Button(optionsFrame, text="6. Sixes available")
+            sixesLabel = Button(optionsFrame, text="Sixes available", command=partial(addToScore, 6))
             sixesLabel.pack(side=TOP)
         if possible_options[6] == True:
-            print("7. 3 of a kind available")
-            threeKindLbael = Button(optionsFrame, text="7. 3 of a kind available")
+            threeKindLbael = Button(optionsFrame, text="3 of a kind available", command=partial(addToScore, 7))
             threeKindLbael.pack(side=TOP)
         if possible_options[7] == True:
-            print("8. 4 of a kind available")
-            fourKindLabel = Button(optionsFrame, text="8. 4 of a kind available")
+            fourKindLabel = Button(optionsFrame, text="4 of a kind available", command=partial(addToScore, 8))
             fourKindLabel.pack(side=TOP)
         if possible_options[8] == True:
-            print("9. Full House available")
-            fullHouseLabel = Button(optionsFrame, text="9. Full House available")
+            fullHouseLabel = Button(optionsFrame, text="Full House available", command=partial(addToScore, 9))
             fullHouseLabel.pack(side=TOP)
         if possible_options[9] == True:
-            print("10. Small Straight available")
-            smallStraightLabel = Button(optionsFrame, text="10. Small Straight available")
+            smallStraightLabel = Button(optionsFrame, text="Small Straight available", command=partial(addToScore, 10))
             smallStraightLabel.pack(side=TOP)
         if possible_options[10] == True:
-            print("11. Large Straight available")
-            largeStraightLabel = Button(optionsFrame, text="11. Large Straight available")
+            largeStraightLabel = Button(optionsFrame, text="Large Straight available", command=partial(addToScore, 11))
             largeStraightLabel.pack(side=TOP)
         if possible_options[11] == True:
-            print("12. Yahtsee available")
-            yahtseeLabel = Button(optionsFrame, text="12. Yahtsee available")
+            yahtseeLabel = Button(optionsFrame, text="Yahtsee available", command=partial(addToScore, 12))
             yahtseeLabel.pack(side=TOP)
         if possible_options[12] == True:
-            print("13. Chance available")
-            chanceLabel = Button(optionsFrame, text="13. Chance available")
+            chanceLabel = Button(optionsFrame, text="Chance available", command=partial(addToScore, 13))
             chanceLabel.pack(side=TOP)
     
     def setScore(self, score, options, dice):
@@ -204,35 +198,88 @@ class Player:
 class Game:
     def __init__(self):
         self.player = Player()
+        self.counter = 0
+        self.dicesToKeep = []
+        self.dice = []
 
     def dice_generator(self, n):
         self.dice = []
         for i in range(n):
             self.dice.append(random.randint(1,6))
         return self.dice
-    
+
     def game_generator(self):
 
-        def pick2(value):
+        def playAgain():
+            global upper
+            upper = self.player.upperSection
+            global lower
+            lower = self.player.lowerSection
             for child in titleFrame.winfo_children():
-                    child.destroy()
+                child.destroy()
             for child in diceFrame.winfo_children():
-                    child.destroy()
+                child.destroy()
             for child in optionsFrame.winfo_children():
-                    child.destroy()
-            # self.diceNum = input('How many dices would you like to keep? ')
-            self.dicesToKeep = self.throw_again(value, self.dice)
-            self.dice = self.dicesToKeep + self.dice_generator(5-int(value))
-            # print('These are your dices now: ')
+                child.destroy()
+            for child in answerFrame.winfo_children():
+                child.destroy()
+            for child in quitFrame.winfo_children():
+                child.destroy()
+            Game().game_generator()
+
+        def afterNextScreen2():
+            for child in diceFrame.winfo_children():
+                child.destroy()
+            for child in titleFrame.winfo_children():
+                child.destroy()
             theseAreYourDicesNow = Label(titleFrame, text="These are your dices now:")
-            theseAreYourDicesNow.grid(row=0, columnspan=5)
+            theseAreYourDicesNow.pack()
             colCount = 0
             for item in self.dice:
                 dices = Button(diceFrame, text=item, height=DICEHEIGHT, width=DICEWIDTH)
                 dices.grid(row=1, column=colCount)
                 colCount += 1
-            answer1('N')
+            for child in optionsFrame.winfo_children():
+                    child.destroy()
+            for child in answerFrame.winfo_children():
+                    child.destroy()
+            self.player.option_display(self.player.dice_checker(self.dice))
+            seeScoreButton = Button(answerFrame, text="See score", command=partial(answer1, 'N'))
+            seeScoreButton.pack(pady=30)
+            
+        def nextScreen2(value):
+            self.dice = self.dicesToKeep + self.dice_generator(5-value)
+            afterNextScreen2()
 
+        def addToDTK2(value):
+            self.counter += 1
+            self.dicesToKeep.append(self.dice[value])
+            if self.counter == self.number:
+                nextScreen2(self.number)
+
+        def pick2(value):
+            self.counter = 0
+            self.dicesToKeep = []
+            self.number = value
+            if value == 0:
+                for child in diceFrame.winfo_children():
+                    child.destroy()
+                for child in answerFrame.winfo_children():
+                    child.destroy()
+                nextScreen2(value)
+            elif value == 5:
+                self.dicesToKeep = self.dice
+                nextScreen2(value)
+            else:
+                for child in titleFrame.winfo_children():
+                        child.destroy()
+                for child in optionsFrame.winfo_children():
+                        child.destroy()
+                selectDiceLabel = Label(optionsFrame, text="Select dice to keep (1 for the first, 2 for the second etc.)")
+                selectDiceLabel.grid(row=0, columnspan=5)
+                for i in range(5):
+                    selectDiceButtons = Button(answerFrame, text=i+1, command=partial(addToDTK2, i))
+                    selectDiceButtons.grid(row=1, column=i)
 
         def answer2(value):
             if value == 'Y':
@@ -247,27 +294,23 @@ class Game:
                     pick.grid(row=1, column=i)
             else:
                 answer1('N')
-
-
-        def pick1(value):
-            for child in titleFrame.winfo_children():
-                    child.destroy()
+            
+        def afterNextScreen1():
             for child in diceFrame.winfo_children():
-                    child.destroy()
-            for child in optionsFrame.winfo_children():
-                    child.destroy()
-            # self.diceNum = input('How many dices would you like to keep? ')
-            self.dicesToKeep = self.throw_again(value, self.dice)
-            self.dice = self.dicesToKeep + self.dice_generator(5-int(value))
-            # print('These are your dices now: ')
+                child.destroy()
+            for child in titleFrame.winfo_children():
+                child.destroy()
             theseAreYourDicesNow = Label(titleFrame, text="These are your dices now:")
-            theseAreYourDicesNow.grid(row=0, columnspan=5)
+            theseAreYourDicesNow.pack()
             colCount = 0
             for item in self.dice:
                 dices = Button(diceFrame, text=item, height=DICEHEIGHT, width=DICEWIDTH)
                 dices.grid(row=1, column=colCount)
                 colCount += 1
-            # print(self.dice)
+            for child in optionsFrame.winfo_children():
+                    child.destroy()
+            for child in answerFrame.winfo_children():
+                    child.destroy()
             self.player.option_display(self.player.dice_checker(self.dice))
             answer2Label = Label(answerFrame, text='You have 1 more throw, would you like to use it?')
             answer2Label.grid(row=0, columnspan=2)
@@ -275,16 +318,39 @@ class Game:
             yesButton2.grid(row=1, column=0)
             noButton2 = Button(answerFrame, text="No", command=partial(answer2, 'N'))
             noButton2.grid(row=1, column=1)
-            # self.answer2 = input('You have 1 more throw, would you like to use it?(Y for yes)')
-            # if self.answer2 == 'Y':
-            #     self.diceNum = input('How many dices would you like to keep? ')
-            #     self.dicesToKeep = self.throw_again(int(self.diceNum), self.dice)
-            #     self.dice = self.dicesToKeep + self.dice_generator(5-int(self.diceNum))
-            #     print('These are your dices now: ')
-            #     print(self.dice)
-            #     self.player.option_display(self.player.dice_checker(self.dice))
 
-        # self.answer = input('You have 2 more throws, would you like to use them?(Y for yes)')
+        def nextScreen1(value):
+            self.dice = self.dicesToKeep + self.dice_generator(5-value)
+            afterNextScreen1()
+            
+        def addToDTK1(value):
+            self.counter += 1
+            self.dicesToKeep.append(self.dice[value])
+            if self.counter == self.number:
+                nextScreen1(self.number)
+
+        def pick1(value):
+            self.number = value
+            if value == 0:
+                for child in diceFrame.winfo_children():
+                    child.destroy()
+                for child in answerFrame.winfo_children():
+                    child.destroy()
+                nextScreen1(value)
+            elif value == 5:
+                self.dicesToKeep = self.dice
+                nextScreen1(value)
+            else:
+                for child in titleFrame.winfo_children():
+                        child.destroy()
+                for child in optionsFrame.winfo_children():
+                        child.destroy()
+                selectDiceLabel = Label(optionsFrame, text="Select dice to keep (1 for the first, 2 for the second etc.)")
+                selectDiceLabel.grid(row=0, columnspan=5)
+                for i in range(0, 5):
+                    selectDiceButtons = Button(answerFrame, text=i+1, command=partial(addToDTK1, i))
+                    selectDiceButtons.grid(row=1, column=i)
+
         def answer1(value):
             if value == 'Y':
                 for child in optionsFrame.winfo_children():
@@ -292,28 +358,46 @@ class Game:
                 for child in answerFrame.winfo_children():
                     child.destroy()
                 howManyDice = Label(optionsFrame, text="How many dices would you like to keep?")
-                howManyDice.grid(row=0, columnspan=5)
+                howManyDice.grid(row=0, columnspan=6)
                 for i in range(0, 6):
                     pick = Button(optionsFrame, text=i, command=partial(pick1, i))
                     pick.grid(row=1, column=i)    
             else:
-                self.choice = input('Choose option to score: ')
-                self.player.setScore(int(self.choice), self.player.dice_checker(self.dice), self.dice)
-                print(self.player.upperSection)
-                print(self.player.lowerSection)
-
+                for child in answerFrame.winfo_children():
+                    child.destroy()
+                self.player.setScore(numberToAdd, self.player.dice_checker(self.dice), self.dice)
+                upperSectionLabel = Label(answerFrame, text="Upper section score: ")
+                upperSectionLabel.grid(row=2, column=0)
+                upperSectionScoreLabel = Label(answerFrame, text=self.player.upperSection)
+                upperSectionScoreLabel.grid(row=2, column=1)
+                upperSectionSumLabel = Label(answerFrame, text="Upper section sum: ")
+                upperSectionSumLabel.grid(row=2, column=2)
+                upperSectionSum = Label(answerFrame, text=sum(self.player.upperSection))
+                upperSectionSum.grid(row=2, column=3)
+                lowerSectionLabel = Label(answerFrame, text="Lower section score: ")
+                lowerSectionLabel.grid(row=3, column=0)
+                lowerSectionScoreLabel = Label(answerFrame, text=self.player.lowerSection)
+                lowerSectionScoreLabel.grid(row=3, column=1)
+                lowerSectionScoreLabel.grid(row=3, column=1)
+                lowerSectionSumLabel = Label(answerFrame, text="Lower section sum: ")
+                lowerSectionSumLabel.grid(row=3, column=2)
+                lowerSectionSum = Label(answerFrame, text=sum(self.player.lowerSection))
+                lowerSectionSum.grid(row=3, column=3)
+                totalSumLabel = Label(answerFrame, text="Total sum: " + str(sum(self.player.upperSection + self.player.lowerSection)))
+                totalSumLabel.grid(row=4, columnspan=4)
+                playAgainButton = Button(quitFrame, text="Play again", command=playAgain)
+                playAgainButton.pack(side=BOTTOM)
+                
         quitButton = Button(quitFrame, text="Quit game", command=quit)
-        quitButton.pack()
+        quitButton.pack(side=BOTTOM, pady=20)
         self.dices = self.dice_generator(5)
-        print('These are your dices for this throw: ')
         theseAreYourDices = Label(titleFrame, text='These are your dices for this throw: ')
-        theseAreYourDices.pack(anchor=N)
+        theseAreYourDices.pack()
         colCount = 0
         for item in self.dice:
             dices = Button(diceFrame, text=item, height=DICEHEIGHT, width=DICEWIDTH)
             dices.grid(row=0, column=colCount)
             colCount += 1
-        print(self.dice)
         self.player.option_display(self.player.dice_checker(self.dice))
         answerLabel = Label(answerFrame, text='You have 2 more throws, would you like to use them?')
         answerLabel.grid(row=0, columnspan=2)
@@ -322,32 +406,8 @@ class Game:
         noButton = Button(answerFrame, text="No", command=partial(answer1, 'N'))
         noButton.grid(row=1, column=1)
         
-
-        
-   
-    def throw_again(self, number, diceList):
-        self.keepDice = []
-        for i in range(number):
-            selectDiceLabel = Label(optionsFrame, text="Select dice to keep (1, 2, 3 etc.)")
-            selectDiceLabel.pack()
-            for i in range(1, number+1):
-                selectDiceButton = Button(answerFrame, text=i)
-            self.d_t_k = input('Select dice to keep(1 for the first, 2 for the second and etc. ')
-            self.keepDice.append(diceList[int(self.d_t_k) - 1])
-        return self.keepDice
-    
 game = Game()
-# while True:
 game.game_generator()
-    # if all(game.player.lowerSectionBool) and all(game.player.upperSectionBool):
-    #     break 
+
 
 window.mainloop()
-
-#all() til að tjekka að allt sé True
-#any() til að tjekka að eitthvað sé True
-
-
-
-
-

@@ -1,4 +1,4 @@
-#Yahtzee leikur
+#Yahtzee TUI
 import random
 import statistics
 
